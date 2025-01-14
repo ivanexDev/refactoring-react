@@ -5,6 +5,8 @@ import productResponse from "./data/productResponse.json";
 import { screen } from "@testing-library/react";
 import { expect } from "vitest";
 
+import userEvent from "@testing-library/user-event"
+
 export function givenAProducts(mockWebServer: MockWebServer): RemoteProduct[] {
     mockWebServer.addRequestHandlers([
         {
@@ -29,30 +31,72 @@ export function givenThereAreNoProducts(mockWebServer: MockWebServer) {
     ]);
 }
 
-export async function waitToTableIsLoad(){
-    await waitFor(async()=> expect((await screen.findAllByRole("row")).length).toBeGreaterThan(1))
+export async function waitToTableIsLoad() {
+    await waitFor(async () =>
+        expect((await screen.findAllByRole("row")).length).toBeGreaterThan(1)
+    );
 }
 
-export function verifyRows( rows: HTMLElement[], products: RemoteProduct[] ){
+export function verifyRows(rows: HTMLElement[], products: RemoteProduct[]) {
+    expect(rows.length).toBe(products.length);
 
-    expect(rows.length).toBe(products.length)
-
-    rows.forEach((row, index) =>{
+    rows.forEach((row, index) => {
         const rowScope = within(row);
-        const cells = rowScope.getAllByRole("cell")
+        const cells = rowScope.getAllByRole("cell");
 
-        expect(cells.length).toBe(6)
+        expect(cells.length).toBe(6);
 
-        const product = products[index]
+        const product = products[index];
 
         within(cells[0]).getByText(product.id);
         within(cells[1]).getByText(product.title);
 
         const image: HTMLImageElement = within(cells[2]).getByRole("img");
-        expect(image.src).toBe(product.image)
+        expect(image.src).toBe(product.image);
 
         within(cells[3]).getByText(`$${product.price.toFixed(2)}`);
         within(cells[4]).getByText(product.price === 0 ? "inactive" : "active");
-
-    })
+    });
 }
+
+export async function openDialogToEditPrice(index: number):Promise<HTMLElement>{
+
+    const allRows = await screen.findAllByRole("row")
+
+    const [, ...rows] = allRows;
+
+    const row = rows[index]
+
+    const rowScope = within(row)
+
+    await userEvent.click(rowScope.getByRole("menuitem"))
+
+    const updatePriceMenu = await screen.findByRole('menuitem', { name: /update price/i })
+
+    await userEvent.click(updatePriceMenu)
+
+    const dialog =  await screen.findByRole("dialog")
+
+    return dialog;
+
+}
+
+export async function verifyDialog(dialog: HTMLElement , product:RemoteProduct ){
+
+    const dialogScope = within(dialog);
+
+    dialogScope.getByText(product.title);
+
+    const header: HTMLElement = dialogScope.getByRole("heading");
+
+    expect(header.innerHTML).toBe("Update price");
+
+    const image:HTMLImageElement = dialogScope.getByRole("img");
+
+    expect(image.src).toBe(product.image);
+
+    expect(dialogScope.findByDisplayValue(product.price))
+
+}
+
+
