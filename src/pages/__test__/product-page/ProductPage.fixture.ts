@@ -162,10 +162,8 @@ export async function tryOpenDialog(index: number) {
     userEvent.click(menuItem);
 }
 
-export async function buttonSaveIsDisabled(dialog: HTMLElement){
-
+export async function buttonSaveIsDisabled(dialog: HTMLElement) {
     const dialogScope = within(dialog);
 
-    expect(dialogScope.getByRole("button", { name: /save/i }).closest("button")).toBeDisabled()
-
+    expect(dialogScope.getByRole("button", { name: /save/i }).closest("button")).toBeDisabled();
 }

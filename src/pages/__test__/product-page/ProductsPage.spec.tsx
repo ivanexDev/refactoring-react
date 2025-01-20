@@ -91,7 +91,7 @@ describe("ProductsPage", () => {
 
             await verifyValidations(dialog, "Invalid price format");
 
-            await buttonSaveIsDisabled(dialog)
+            await buttonSaveIsDisabled(dialog);
         });
 
         test("Should show error for no number characters", async () => {
@@ -107,7 +107,7 @@ describe("ProductsPage", () => {
 
             await verifyValidations(dialog, "Only numbers are allowed");
 
-            await buttonSaveIsDisabled(dialog)
+            await buttonSaveIsDisabled(dialog);
         });
 
         test("Should show error for numbers greater than 999.99", async () => {
@@ -123,7 +123,7 @@ describe("ProductsPage", () => {
 
             await verifyValidations(dialog, "The max possible price is 999.99");
 
-            await buttonSaveIsDisabled(dialog)
+            await buttonSaveIsDisabled(dialog);
         });
 
         test("Should change price", async () => {

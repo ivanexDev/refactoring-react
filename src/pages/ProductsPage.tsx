@@ -8,11 +8,11 @@ import {
 import { Footer } from "../components/Footer";
 import { MainAppBar } from "../components/MainAppBar";
 import styled from "@emotion/styled";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { useAppContext } from "../context/useAppContext";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
-import { useReload } from "../hooks/useReload";
-import { RemoteProduct, StoreApi } from "../api/StoreApi";
+import {  StoreApi } from "../api/StoreApi";
+import { buildProduct, Product, useProducts } from "./useProducts";
 
 const baseColumn: Partial<GridColDef<Product>> = {
     disableColumnMenu: true,
@@ -22,27 +22,17 @@ const baseColumn: Partial<GridColDef<Product>> = {
 const storeApi = new StoreApi();
 
 export const ProductsPage: React.FC = () => {
-    const { currentUser } = useAppContext();
-    const [reloadKey, reload] = useReload();
 
-    const [products, setProducts] = useState<Product[]>([]);
+    const { products, reload } = useProducts(storeApi)
+
+    const { currentUser } = useAppContext();
     const [snackBarError, setSnackBarError] = useState<string>();
     const [snackBarSuccess, setSnackBarSuccess] = useState<string>();
 
     const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
     const [priceError, setPriceError] = useState<string | undefined>(undefined);
 
-    useEffect(() => {
-        storeApi.getAll().then(response => {
-            console.debug("Reloading", reloadKey);
 
-            const remoteProducts = response as RemoteProduct[];
-
-            const products = remoteProducts.map(buildProduct);
-
-            setProducts(products);
-        });
-    }, [reloadKey]);
 
     const updatingQuantity = useCallback(
         async (id: number) => {
@@ -267,12 +257,7 @@ const ProductImage = styled.img`
 
 type ProductStatus = "active" | "inactive";
 
-export interface Product {
-    id: number;
-    title: string;
-    image: string;
-    price: string;
-}
+
 
 const StatusContainer = styled.div<{ status: ProductStatus }>`
     background: ${props => (props.status === "inactive" ? "red" : "green")};
@@ -285,16 +270,6 @@ const StatusContainer = styled.div<{ status: ProductStatus }>`
     width: 100px;
 `;
 
-function buildProduct(remoteProduct: RemoteProduct): Product {
-    return {
-        id: remoteProduct.id,
-        title: remoteProduct.title,
-        image: remoteProduct.image,
-        price: remoteProduct.price.toLocaleString("en-US", {
-            maximumFractionDigits: 2,
-            minimumFractionDigits: 2,
-        }),
-    };
-}
+
 
 const priceRegex = /^\d+(\.\d{1,2})?$/;
