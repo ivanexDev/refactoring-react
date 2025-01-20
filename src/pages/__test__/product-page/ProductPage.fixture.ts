@@ -96,37 +96,67 @@ export async function verifyDialog(dialog: HTMLElement, product: RemoteProduct) 
 }
 
 export async function typePrice(dialog: HTMLElement, price: string) {
-    const dialogScope = within(dialog)
-    const input : HTMLInputElement = dialogScope.getByRole('textbox', {  name: /price/i})
-    await userEvent.clear(input)
+    const dialogScope = within(dialog);
+    const input: HTMLInputElement = dialogScope.getByRole("textbox", { name: /price/i });
+    await userEvent.clear(input);
     await userEvent.type(input, price);
 }
 
-export async function verifyValidations(dialog: HTMLElement, error: string){
-
-    const dialogScope = within(dialog)
-    dialogScope.getByText(error)
+export async function verifyValidations(dialog: HTMLElement, error: string) {
+    const dialogScope = within(dialog);
+    dialogScope.getByText(error);
 }
 
 export async function changePrice(dialog: HTMLElement, price: string) {
-    const dialogScope = within(dialog)
-    const input : HTMLInputElement = dialogScope.getByRole('textbox', {  name: /price/i})
-    await userEvent.clear(input)
-    await userEvent.type(input, price)
-    expect(input.value).toBe(price)
-    const saveButton:HTMLButtonElement = dialogScope.getByRole('button', {  name: /save/i}) 
-    await userEvent.click(saveButton)
+    const dialogScope = within(dialog);
+    const input: HTMLInputElement = dialogScope.getByRole("textbox", { name: /price/i });
+    await userEvent.clear(input);
+    await userEvent.type(input, price);
+    expect(input.value).toBe(price);
+    const saveButton: HTMLButtonElement = dialogScope.getByRole("button", { name: /save/i });
+    await userEvent.click(saveButton);
 }
 
-export function verifyProductStatus(row:HTMLElement, status: string) {
+export function verifyProductStatus(row: HTMLElement, status: string) {
+    const rowScope = within(row);
+    const cells = rowScope.getAllByRole("cell");
+    expect(cells.length).toBe(6);
+    within(cells[4]).getByText(status);
+}
 
+export async function changeUserRole(){
+    const button:HTMLButtonElement = await screen.findByRole('button', {  name: /user: admin user/i})
 
-        const rowScope = within(row);
-        const cells = rowScope.getAllByRole("cell");
-        expect(cells.length).toBe(6);
-        within(cells[4]).getByText(status);
-        
+    userEvent.click(button)
 
+    const menu: HTMLMenuElement = await screen.findByRole('menu')
 
-    
+    const menuScope =  within(menu)
+
+    const nonAdmin =  menuScope.getByRole('menuitem', {  name: /non admin user/i})
+
+    userEvent.click(nonAdmin)
+
+    const roleStatus:HTMLButtonElement = await screen.findByRole('button', {  name: /user: non admin user/i})
+
+    expect(roleStatus.textContent).toBe("User: Non admin user")
+
+}
+
+export async function tryOpenDialog(index: number){
+
+    const allRows = await screen.findAllByRole("row");
+
+    const [, ...rows] = allRows;
+
+    const row = rows[index];
+
+    const rowScope = within(row);
+
+    await userEvent.click(rowScope.getByRole("menuitem"));
+
+    const menuItem = await screen.findByRole('menuitem', {  name: /update price/i});
+
+    userEvent.click(menuItem)
+
 }
