@@ -124,27 +124,29 @@ export function verifyProductStatus(row: HTMLElement, status: string) {
     within(cells[4]).getByText(status);
 }
 
-export async function changeUserRole(){
-    const button:HTMLButtonElement = await screen.findByRole('button', {  name: /user: admin user/i})
+export async function changeUserRole() {
+    const button: HTMLButtonElement = await screen.findByRole("button", {
+        name: /user: admin user/i,
+    });
 
-    userEvent.click(button)
+    userEvent.click(button);
 
-    const menu: HTMLMenuElement = await screen.findByRole('menu')
+    const menu: HTMLMenuElement = await screen.findByRole("menu");
 
-    const menuScope =  within(menu)
+    const menuScope = within(menu);
 
-    const nonAdmin =  menuScope.getByRole('menuitem', {  name: /non admin user/i})
+    const nonAdmin = menuScope.getByRole("menuitem", { name: /non admin user/i });
 
-    userEvent.click(nonAdmin)
+    userEvent.click(nonAdmin);
 
-    const roleStatus:HTMLButtonElement = await screen.findByRole('button', {  name: /user: non admin user/i})
+    const roleStatus: HTMLButtonElement = await screen.findByRole("button", {
+        name: /user: non admin user/i,
+    });
 
-    expect(roleStatus.textContent).toBe("User: Non admin user")
-
+    expect(roleStatus.textContent).toBe("User: Non admin user");
 }
 
-export async function tryOpenDialog(index: number){
-
+export async function tryOpenDialog(index: number) {
     const allRows = await screen.findAllByRole("row");
 
     const [, ...rows] = allRows;
@@ -155,8 +157,15 @@ export async function tryOpenDialog(index: number){
 
     await userEvent.click(rowScope.getByRole("menuitem"));
 
-    const menuItem = await screen.findByRole('menuitem', {  name: /update price/i});
+    const menuItem = await screen.findByRole("menuitem", { name: /update price/i });
 
-    userEvent.click(menuItem)
+    userEvent.click(menuItem);
+}
+
+export async function buttonSaveIsDisabled(dialog: HTMLElement){
+
+    const dialogScope = within(dialog);
+
+    expect(dialogScope.getByRole("button", { name: /save/i }).closest("button")).toBeDisabled()
 
 }

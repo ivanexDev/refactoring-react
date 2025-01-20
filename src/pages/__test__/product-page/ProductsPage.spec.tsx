@@ -5,6 +5,7 @@ import { AppProvider } from "../../../context/AppProvider";
 import { ReactNode } from "react";
 import { MockWebServer } from "../../../tests/MockWebServer";
 import {
+    buttonSaveIsDisabled,
     changePrice,
     changeUserRole,
     givenAProducts,
@@ -89,6 +90,8 @@ describe("ProductsPage", () => {
             await typePrice(dialog, "-4");
 
             await verifyValidations(dialog, "Invalid price format");
+
+            await buttonSaveIsDisabled(dialog)
         });
 
         test("Should show error for no number characters", async () => {
@@ -103,6 +106,8 @@ describe("ProductsPage", () => {
             await typePrice(dialog, "abc");
 
             await verifyValidations(dialog, "Only numbers are allowed");
+
+            await buttonSaveIsDisabled(dialog)
         });
 
         test("Should show error for numbers greater than 999.99", async () => {
@@ -117,6 +122,8 @@ describe("ProductsPage", () => {
             await typePrice(dialog, "1000");
 
             await verifyValidations(dialog, "The max possible price is 999.99");
+
+            await buttonSaveIsDisabled(dialog)
         });
 
         test("Should change price", async () => {
@@ -172,19 +179,17 @@ describe("ProductsPage", () => {
         });
 
         test("Should show an error when is non admin", async () => {
-
             givenAProducts(mockWebServer);
 
             RenderComponent(<ProductsPage />);
 
             await waitToTableIsLoad();
 
-            await changeUserRole()
+            await changeUserRole();
 
-            await tryOpenDialog(0)
+            await tryOpenDialog(0);
 
-            await screen.findByText(/only admin users can edit the price of a product/i)
-
+            await screen.findByText(/only admin users can edit the price of a product/i);
         });
     });
 });
