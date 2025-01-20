@@ -5,7 +5,7 @@ import productResponse from "./data/productResponse.json";
 import { screen } from "@testing-library/react";
 import { expect } from "vitest";
 
-import userEvent from "@testing-library/user-event"
+import userEvent from "@testing-library/user-event";
 
 export function givenAProducts(mockWebServer: MockWebServer): RemoteProduct[] {
     mockWebServer.addRequestHandlers([
@@ -59,30 +59,27 @@ export function verifyRows(rows: HTMLElement[], products: RemoteProduct[]) {
     });
 }
 
-export async function openDialogToEditPrice(index: number):Promise<HTMLElement>{
-
-    const allRows = await screen.findAllByRole("row")
+export async function openDialogToEditPrice(index: number): Promise<HTMLElement> {
+    const allRows = await screen.findAllByRole("row");
 
     const [, ...rows] = allRows;
 
-    const row = rows[index]
+    const row = rows[index];
 
-    const rowScope = within(row)
+    const rowScope = within(row);
 
-    await userEvent.click(rowScope.getByRole("menuitem"))
+    await userEvent.click(rowScope.getByRole("menuitem"));
 
-    const updatePriceMenu = await screen.findByRole('menuitem', { name: /update price/i })
+    const updatePriceMenu = await screen.findByRole("menuitem", { name: /update price/i });
 
-    await userEvent.click(updatePriceMenu)
+    await userEvent.click(updatePriceMenu);
 
-    const dialog =  await screen.findByRole("dialog")
+    const dialog = await screen.findByRole("dialog");
 
     return dialog;
-
 }
 
-export async function verifyDialog(dialog: HTMLElement , product:RemoteProduct ){
-
+export async function verifyDialog(dialog: HTMLElement, product: RemoteProduct) {
     const dialogScope = within(dialog);
 
     dialogScope.getByText(product.title);
@@ -91,12 +88,45 @@ export async function verifyDialog(dialog: HTMLElement , product:RemoteProduct )
 
     expect(header.innerHTML).toBe("Update price");
 
-    const image:HTMLImageElement = dialogScope.getByRole("img");
+    const image: HTMLImageElement = dialogScope.getByRole("img");
 
     expect(image.src).toBe(product.image);
 
-    expect(dialogScope.findByDisplayValue(product.price))
-
+    expect(dialogScope.findByDisplayValue(product.price));
 }
 
+export async function typePrice(dialog: HTMLElement, price: string) {
+    const dialogScope = within(dialog)
+    const input : HTMLInputElement = dialogScope.getByRole('textbox', {  name: /price/i})
+    await userEvent.clear(input)
+    await userEvent.type(input, price);
+}
 
+export async function verifyValidations(dialog: HTMLElement, error: string){
+
+    const dialogScope = within(dialog)
+    dialogScope.getByText(error)
+}
+
+export async function changePrice(dialog: HTMLElement, price: string) {
+    const dialogScope = within(dialog)
+    const input : HTMLInputElement = dialogScope.getByRole('textbox', {  name: /price/i})
+    await userEvent.clear(input)
+    await userEvent.type(input, price)
+    expect(input.value).toBe(price)
+    const saveButton:HTMLButtonElement = dialogScope.getByRole('button', {  name: /save/i}) 
+    await userEvent.click(saveButton)
+}
+
+export function verifyProductStatus(row:HTMLElement, status: string) {
+
+
+        const rowScope = within(row);
+        const cells = rowScope.getAllByRole("cell");
+        expect(cells.length).toBe(6);
+        within(cells[4]).getByText(status);
+        
+
+
+    
+}
