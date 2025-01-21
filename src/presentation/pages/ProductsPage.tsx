@@ -9,10 +9,10 @@ import { Footer } from "../components/Footer";
 import { MainAppBar } from "../components/MainAppBar";
 import styled from "@emotion/styled";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { useAppContext } from "../context/useAppContext";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
-import {  StoreApi } from "../api/StoreApi";
 import { buildProduct, Product, useProducts } from "./useProducts";
+import { useAppContext } from "../context/useAppContext";
+import { StoreApi } from "../../data/api/StoreApi";
 
 const baseColumn: Partial<GridColDef<Product>> = {
     disableColumnMenu: true,
@@ -24,7 +24,6 @@ const storeApi = new StoreApi();
 export const ProductsPage: React.FC = () => {
 
     const { products, reload } = useProducts(storeApi)
-
     const { currentUser } = useAppContext();
     const [snackBarError, setSnackBarError] = useState<string>();
     const [snackBarSuccess, setSnackBarSuccess] = useState<string>();

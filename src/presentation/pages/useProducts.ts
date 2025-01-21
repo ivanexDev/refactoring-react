@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { RemoteProduct, StoreApi } from "../api/StoreApi";
+
 import { useReload } from "../hooks/useReload";
+import { RemoteProduct, StoreApi } from "../../data/api/StoreApi";
 
-export function useProducts(storeApi:StoreApi){
 
+export function useProducts(storeApi: StoreApi) {
     const [products, setProducts] = useState<Product[]>([]);
     const [reloadKey, reload] = useReload();
 
@@ -21,8 +22,8 @@ export function useProducts(storeApi:StoreApi){
 
     return {
         products,
-        reload
-    }
+        reload,
+    };
 }
 
 export function buildProduct(remoteProduct: RemoteProduct): Product {

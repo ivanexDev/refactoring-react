@@ -1,11 +1,10 @@
 import { waitFor, within } from "@testing-library/dom";
-import { RemoteProduct } from "../../../api/StoreApi";
-import { MockWebServer } from "../../../tests/MockWebServer";
 import productResponse from "./data/productResponse.json";
 import { screen } from "@testing-library/react";
 import { expect } from "vitest";
-
 import userEvent from "@testing-library/user-event";
+import { MockWebServer } from "../../../../tests/MockWebServer";
+import { RemoteProduct } from "../../../../data/api/StoreApi";
 
 export function givenAProducts(mockWebServer: MockWebServer): RemoteProduct[] {
     mockWebServer.addRequestHandlers([

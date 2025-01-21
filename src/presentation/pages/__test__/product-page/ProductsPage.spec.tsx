@@ -1,9 +1,7 @@
 import { render, RenderResult, screen } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { ProductsPage } from "../../ProductsPage";
-import { AppProvider } from "../../../context/AppProvider";
 import { ReactNode } from "react";
-import { MockWebServer } from "../../../tests/MockWebServer";
 import {
     buttonSaveIsDisabled,
     changePrice,
@@ -20,6 +18,8 @@ import {
     waitToTableIsLoad,
 } from "./ProductPage.fixture";
 import { verifyHeader } from "./ProductPage.helpers";
+import { MockWebServer } from "../../../../tests/MockWebServer";
+import { AppProvider } from "../../../context/AppProvider";
 
 const mockWebServer = new MockWebServer();
 
