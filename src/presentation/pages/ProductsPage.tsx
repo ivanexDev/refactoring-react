@@ -14,7 +14,8 @@ import { useProducts } from "./useProducts";
 import { useAppContext } from "../context/useAppContext";
 import { StoreApi } from "../../data/api/StoreApi";
 import { Product } from "../../domain/Product.interface";
-import { buildProduct, GetProducts } from "../../domain/GetProducts.usecase";
+import { GetProducts } from "../../domain/GetProducts.usecase";
+import { buildProduct, ProductApiRepository } from "../../data/ProductApiRepository";
 
 const baseColumn: Partial<GridColDef<Product>> = {
     disableColumnMenu: true,
@@ -23,12 +24,13 @@ const baseColumn: Partial<GridColDef<Product>> = {
 
 const storeApi = new StoreApi();
 
-function createGetProducts():GetProducts {
-    return new GetProducts(storeApi)
+function createGetProducts(): GetProducts {
+    const productRepository = new ProductApiRepository(storeApi)
+    return new GetProducts(productRepository);
 }
 
 export const ProductsPage: React.FC = () => {
-    const getPrudcts = useMemo(()=> createGetProducts(),[])
+    const getPrudcts = useMemo(() => createGetProducts(), []);
     const { products, reload } = useProducts(getPrudcts);
     const { currentUser } = useAppContext();
     const [snackBarError, setSnackBarError] = useState<string>();

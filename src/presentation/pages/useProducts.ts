@@ -9,10 +9,10 @@ export function useProducts(getProducts: GetProducts) {
     const [reloadKey, reload] = useReload();
 
     useEffect(() => {
-        getProducts.execute().then( products =>{
-            console.log("Reloading", reloadKey)
-            setProducts(products)
-        })
+        getProducts.execute().then(products => {
+            console.log("Reloading", reloadKey);
+            setProducts(products);
+        });
     }, [reloadKey, getProducts]);
 
     return {
@@ -20,5 +20,3 @@ export function useProducts(getProducts: GetProducts) {
         reload,
     };
 }
-
-
