@@ -10,9 +10,11 @@ import { MainAppBar } from "../components/MainAppBar";
 import styled from "@emotion/styled";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
-import { buildProduct, Product, useProducts } from "./useProducts";
+import { useProducts } from "./useProducts";
 import { useAppContext } from "../context/useAppContext";
 import { StoreApi } from "../../data/api/StoreApi";
+import { Product } from "../../domain/Product.interface";
+import { buildProduct, GetProducts } from "../../domain/GetProducts.usecase";
 
 const baseColumn: Partial<GridColDef<Product>> = {
     disableColumnMenu: true,
@@ -21,17 +23,19 @@ const baseColumn: Partial<GridColDef<Product>> = {
 
 const storeApi = new StoreApi();
 
-export const ProductsPage: React.FC = () => {
+function createGetProducts():GetProducts {
+    return new GetProducts(storeApi)
+}
 
-    const { products, reload } = useProducts(storeApi)
+export const ProductsPage: React.FC = () => {
+    const getPrudcts = useMemo(()=> createGetProducts(),[])
+    const { products, reload } = useProducts(getPrudcts);
     const { currentUser } = useAppContext();
     const [snackBarError, setSnackBarError] = useState<string>();
     const [snackBarSuccess, setSnackBarSuccess] = useState<string>();
 
     const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
     const [priceError, setPriceError] = useState<string | undefined>(undefined);
-
-
 
     const updatingQuantity = useCallback(
         async (id: number) => {
@@ -256,8 +260,6 @@ const ProductImage = styled.img`
 
 type ProductStatus = "active" | "inactive";
 
-
-
 const StatusContainer = styled.div<{ status: ProductStatus }>`
     background: ${props => (props.status === "inactive" ? "red" : "green")};
     display: flex;
@@ -268,7 +270,5 @@ const StatusContainer = styled.div<{ status: ProductStatus }>`
     border-radius: 20px;
     width: 100px;
 `;
-
-
 
 const priceRegex = /^\d+(\.\d{1,2})?$/;
